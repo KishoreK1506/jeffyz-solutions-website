@@ -10,8 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
+
+      - name: Show Repository Files
+        run: |
+          echo "Listing files in repository"
+          ls -R
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -20,12 +25,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: us-east-1
 
-     - name: Upload website to S3
+      - name: Upload website to S3
         run: |
           aws s3 sync ./website s3://jeffyzsolutions-website-bucket --delete
 
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
-          --distribution-id E2NA8MK34TX8K3 \
+          --distribution-id YOUR_DISTRIBUTION_ID \
           --paths "/*"
