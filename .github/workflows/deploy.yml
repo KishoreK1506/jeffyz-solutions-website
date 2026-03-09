@@ -20,9 +20,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: us-east-1
 
-      - name: Upload website to S3
+     - name: Upload website to S3
         run: |
-          aws s3 sync website/ s3://jeffyzsolutions-website-bucket --delete
+          aws s3 sync ./website s3://jeffyzsolutions-website-bucket --delete
 
       - name: Invalidate CloudFront cache
         run: |
