@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Support | Jeffyz Solutions</title>
+  <meta name="description" content="Professional AI troubleshooting workspace for PC, OS, Wi‑Fi, router, switch, and safe recovery guidance." />
+  <link rel="icon" href="assets/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body data-page="ai-support">
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+  <div class="bg-grid"></div>
+
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="index.html" aria-label="Jeffyz Solutions home">
+        <img class="brand-logo" src="assets/logo.png" alt="Jeffyz Solutions logo" />
+        <span class="brand-copy">
+          <span class="brand-text">jeffyz<span class="brand-accent">_solutions</span></span>
+          <span class="brand-subtext">Cloud • IT • Network • AI Support</span>
+        </span>
+      </a>
+
+      <nav class="menu" id="menu">
+        <a href="index.html" data-link="home">Home</a>
+        <a href="services.html" data-link="services">Services</a>
+        <a href="pc-consultation.html" data-link="consultation">PC Tool</a>
+        <a href="ai-support.html" data-link="ai-support">AI Support</a>
+        <a href="index.html#contact" data-link="contact">Contact</a>
+      </nav>
+
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="subhero ai-subhero">
+      <div class="container">
+        <span class="eyebrow fade-in">AI troubleshooting workspace</span>
+        <div class="ai-hero-row">
+          <div>
+            <h1 class="fade-up">A better first-pass support experience</h1>
+            <p class="fade-up delay-1">
+              Get structured help for PC, operating system, Wi‑Fi, router, switch, and legitimate recovery issues with a cleaner workflow and more professional responses.
+            </p>
+          </div>
+          <div class="ai-hero-stats fade-up delay-2">
+            <div class="hero-mini-card">
+              <span class="hero-mini-label">Response style</span>
+              <strong>Structured triage</strong>
+            </div>
+            <div class="hero-mini-card">
+              <span class="hero-mini-label">Session memory</span>
+              <strong>Recent context kept</strong>
+            </div>
+            <div class="hero-mini-card">
+              <span class="hero-mini-label">Best for</span>
+              <strong>Fast first-level diagnosis</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container ai-layout pro-ai-layout">
+        <aside class="side-panel reveal">
+          <div class="side-card glass-card">
+            <div class="side-card-top">
+              <h2>Session setup</h2>
+              <span class="mini-badge" id="providerBadge">Provider: loading</span>
+            </div>
+
+            <label class="field-label" for="issueType">Issue category</label>
+            <select id="issueType" class="input-control">
+              <option value="general">General triage</option>
+              <option value="pc">PC performance</option>
+              <option value="wifi">Wi‑Fi / internet</option>
+              <option value="router">Router setup</option>
+              <option value="switch">Switch / VLAN</option>
+              <option value="os">OS reinstall / recovery</option>
+              <option value="recovery">Account recovery</option>
+            </select>
+
+            <div class="session-metrics" id="sessionMetrics">
+              <div class="metric-tile">
+                <span>Messages</span>
+                <strong id="messageCount">1</strong>
+              </div>
+              <div class="metric-tile">
+                <span>Status</span>
+                <strong id="sessionState">Ready</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-card glass-card">
+            <h2>Best use cases</h2>
+            <ul class="side-list">
+              <li>Slow PC or startup issues</li>
+              <li>Weak Wi‑Fi and dead zones</li>
+              <li>Router or switch confusion</li>
+              <li>OS reinstall planning</li>
+              <li>Safe account recovery guidance</li>
+            </ul>
+          </div>
+
+          <div class="side-card glass-card">
+            <div class="side-card-top">
+              <h2>Quick prompts</h2>
+              <button type="button" class="text-link small-link" id="randomPrompt">Shuffle</button>
+            </div>
+            <div class="prompt-stack prompt-grid" id="promptStack">
+              <button class="ghost-chip" data-prompt="My Wi‑Fi is weak in two rooms and the router is near the front door. What should I check first?">Wi‑Fi dead spot</button>
+              <button class="ghost-chip" data-prompt="My PC is very slow on startup and apps take too long to open. What should I inspect?">Slow PC</button>
+              <button class="ghost-chip" data-prompt="I need to reinstall Windows on my own laptop. What should I back up before I start?">OS reinstall</button>
+              <button class="ghost-chip" data-prompt="I forgot the password to my own local Windows account. What safe recovery options should I consider?">Access recovery</button>
+              <button class="ghost-chip" data-prompt="A managed switch is connected but two devices cannot reach the network. What should I verify first?">Switch issue</button>
+              <button class="ghost-chip" data-prompt="My router is online, but some wired devices are not getting IP addresses. Where should I start?">Router DHCP</button>
+            </div>
+          </div>
+        </aside>
+
+        <section class="chat-shell chat-shell-pro reveal delay-1">
+          <div class="chat-head chat-head-pro">
+            <div>
+              <div class="chat-heading-row">
+                <h2>Jeffyz AI Support</h2>
+                <span class="status-pill live" id="aiStatus">Ready</span>
+              </div>
+              <p class="muted">Professional first-pass troubleshooting with structured next steps and clean response formatting.</p>
+            </div>
+            <div class="chat-toolbar">
+              <button type="button" class="btn ghost small" id="copyTranscript">Copy transcript</button>
+              <button type="button" class="btn ghost small" id="clearChat">Reset</button>
+            </div>
+          </div>
+
+          <div class="chat-log chat-log-pro" id="chatLog" aria-live="polite"></div>
+
+          <div class="chat-helper-bar">
+            <span>Tip: include what changed, when it started, and whether the issue affects one device or many.</span>
+            <span class="helper-key">Enter to send • Shift+Enter for a new line</span>
+          </div>
+
+          <form class="chat-form chat-form-pro" id="chatForm">
+            <div class="composer-shell">
+              <textarea id="chatInput" rows="5" maxlength="1600" placeholder="Example: My internet works near the router but not in the back bedroom. I already restarted the router once."></textarea>
+              <div class="composer-footer">
+                <span class="char-count" id="charCount">0 / 1600</span>
+                <div class="chat-actions">
+                  <button type="submit" class="btn" id="sendBtn">Send</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> Jeffyz Solutions. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="services.html">Services</a>
+        <a href="pc-consultation.html">PC Tool</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="ai-support.js"></script>
+</body>
+</html>
