@@ -12,18 +12,66 @@ const DATA_DIR = path.join(__dirname, "data");
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(PUBLIC_DIR));
 
-app.get("/api/health", async (_req, res) => {
+app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     aiProvider: process.env.AI_PROVIDER || "mock",
     time: new Date().toISOString(),
-    chatMode: "structured"
+    mode: "full-stack"
   });
 });
 
-app.post("/send-email", async (req, res) => {
+app.post("/send-email", handleContact);
+app.post("/api/contact", handleContact);
+
+app.post("/api/ai-support", async (req, res) => {
+  const message = String(req.body?.message || "").trim();
+  const history = normalizeHistory(req.body?.history);
+  const issueType = detectIssueType(message, req.body?.issueType);
+
+  if (!message) {
+    return res.status(400).json({ error: "Message is required." });
+  }
+
+  try {
+    const provider = (process.env.AI_PROVIDER || "mock").toLowerCase();
+    let reply = "";
+
+    if (provider === "openai") {
+      reply = await getOpenAIReply({ message, history, issueType });
+    } else if (provider === "ollama") {
+      reply = await getOllamaReply({ message, history, issueType });
+    } else {
+      reply = getMockReply({ message, issueType });
+    }
+
+    return res.json({ provider, issueType, reply });
+  } catch (error) {
+    console.error("ai-support error:", error);
+    return res.status(500).json({
+      error: "Unable to generate an AI response right now.",
+      detail: error.message
+    });
+  }
+});
+
+app.get("*", (req, res) => {
+  const target = req.path === "/" ? "index.html" : req.path.replace(/^\//, "");
+  res.sendFile(path.join(PUBLIC_DIR, target), (error) => {
+    if (error) {
+      res.status(404).sendFile(path.join(PUBLIC_DIR, "index.html"));
+    }
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Jeffyz Solutions server running on port ${PORT}`);
+});
+
+async function handleContact(req, res) {
   const { name, email, message } = req.body || {};
 
   if (!name || !email || !message) {
@@ -34,23 +82,41 @@ app.post("/send-email", async (req, res) => {
     const emailEnabled = process.env.EMAIL_ENABLED === "true";
 
     if (emailEnabled) {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        }
+      const transporter = createMailTransport();
+
+      await transporter.sendMail({
+        from: formatFrom(),
+        replyTo: email,
+        to: process.env.EMAIL_TO || process.env.EMAIL_USER,
+        subject: "New query from Jeffyz Solutions website",
+        text: [
+          `Name: ${name}`,
+          `Email: ${email}`,
+          "",
+          "Query:",
+          message
+        ].join("\n")
       });
 
       await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        replyTo: email,
-        to: process.env.EMAIL_TO || process.env.EMAIL_USER,
-        subject: "New Query from Jeffyz Solutions Website",
-        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
+        from: formatFrom(),
+        to: email,
+        subject: "We received your enquiry | Jeffyz Solutions",
+        text: [
+          `Hi ${name},`,
+          "",
+          "Thank you for contacting Jeffyz Solutions.",
+          "We have received your query and will review it shortly.",
+          "",
+          "Your message:",
+          message,
+          "",
+          "Best regards,",
+          "Jeffyz Solutions"
+        ].join("\n")
       });
 
-      return res.json({ success: true, message: "Query sent successfully." });
+      return res.json({ success: true, message: "Your query has been sent successfully." });
     }
 
     await fs.mkdir(DATA_DIR, { recursive: true });
@@ -76,55 +142,32 @@ app.post("/send-email", async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Saved locally in development mode. Configure email later to send real messages."
+      message: "Saved locally. Enable email settings to receive queries in your inbox."
     });
   } catch (error) {
-    console.error("send-email error:", error);
-    return res.status(500).json({ success: false, message: "Unable to process your request." });
-  }
-});
-
-app.post("/api/ai-support", async (req, res) => {
-  const message = String(req.body?.message || "").trim();
-  const history = normalizeHistory(req.body?.history);
-  const issueType = detectIssueType(message, req.body?.issueType);
-
-  if (!message) {
-    return res.status(400).json({ error: "Message is required." });
-  }
-
-  try {
-    const provider = (process.env.AI_PROVIDER || "mock").toLowerCase();
-    let reply = "";
-
-    if (provider === "openai") {
-      reply = await getOpenAIReply({ message, history, issueType });
-    } else if (provider === "ollama") {
-      reply = await getOllamaReply({ message, history, issueType });
-    } else {
-      reply = getMockReply({ message, history, issueType });
-    }
-
-    return res.json({
-      provider,
-      issueType,
-      reply
-    });
-  } catch (error) {
-    console.error("ai-support error:", error);
+    console.error("contact error:", error);
     return res.status(500).json({
-      error: "Unable to generate an AI response right now."
+      success: false,
+      message: "Unable to process your request right now."
     });
   }
-});
+}
 
-app.get("*", (_req, res) => {
-  res.sendFile(path.join(PUBLIC_DIR, "index.html"));
-});
+function createMailTransport() {
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Jeffyz Solutions server running on port ${PORT}`);
-});
+function formatFrom() {
+  const fromName = process.env.EMAIL_FROM_NAME || "Jeffyz Solutions";
+  const fromEmail = process.env.EMAIL_USER;
+  return fromEmail ? `${fromName} <${fromEmail}>` : fromName;
+}
 
 function normalizeHistory(history) {
   if (!Array.isArray(history)) return [];
@@ -168,7 +211,7 @@ function buildSystemPrompt(issueType = "general") {
   };
 
   return [
-    "You are Jeffyz Solutions AI Support, a professional frontline IT and network troubleshooting assistant for a business website.",
+    "You are Jeffyz Solutions AI Support, a professional frontline IT and network troubleshooting assistant.",
     "The user expects concise, practical, trustworthy guidance that sounds polished and client-facing.",
     focusMap[issueType] || focusMap.general,
     "Never help with bypassing passwords, evading security, accessing devices without authorization, malware, or abuse.",
@@ -212,7 +255,7 @@ async function getOpenAIReply({ message, history, issueType }) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`
+      Authorization: `Bearer ${apiKey}`
     },
     body: JSON.stringify({
       model: process.env.OPENAI_MODEL || "gpt-5.4",
@@ -221,8 +264,8 @@ async function getOpenAIReply({ message, history, issueType }) {
   });
 
   if (!response.ok) {
-    const details = await response.text();
-    throw new Error(`OpenAI request failed: ${details}`);
+    const detail = await response.text();
+    throw new Error(`OpenAI request failed: ${detail}`);
   }
 
   const data = await response.json();
@@ -248,8 +291,8 @@ async function getOllamaReply({ message, history, issueType }) {
   });
 
   if (!response.ok) {
-    const details = await response.text();
-    throw new Error(`Ollama request failed: ${details}`);
+    const detail = await response.text();
+    throw new Error(`Ollama request failed: ${detail}`);
   }
 
   const data = await response.json();

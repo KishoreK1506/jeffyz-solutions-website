@@ -1,22 +1,20 @@
 :root{
-  --bg:#0b0f17;
-  --panel:#111827;
-  --panel2:#0f172a;
-  --text:#e5e7eb;
-  --muted:#9ca3af;
-  --line:#1f2937;
-  --acc:#7c3aed;
-  --acc2:#22c55e;
-  --warn:#f59e0b;
+  --bg:#000000;
+  --panel:#0b0b0c;
+  --panel2:#111113;
+  --text:#f5f5f5;
+  --muted:#a1a1aa;
+  --line:rgba(255,255,255,.12);
+  --acc:#f5f5f5;
+  --acc2:#d4d4d8;
+  --warn:#facc15;
 }
 
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  background: radial-gradient(1200px 500px at 20% 0%, rgba(124,58,237,.25), transparent 60%),
-              radial-gradient(900px 500px at 80% 10%, rgba(34,197,94,.15), transparent 60%),
-              var(--bg);
+  background: var(--bg);
   color:var(--text);
 }
 
@@ -27,7 +25,7 @@ a:hover{opacity:1}
   position:sticky; top:0; z-index:10;
   display:flex; justify-content:space-between; align-items:center;
   padding:16px 20px;
-  background: rgba(15,23,42,.75);
+  background: rgba(0,0,0,.85);
   backdrop-filter: blur(10px);
   border-bottom:1px solid var(--line);
   gap: 16px;
@@ -42,7 +40,7 @@ a:hover{opacity:1}
 .brand-sub{font-size:12px;color:var(--muted)}
 .nav{display:flex; gap:14px; font-size:14px; flex-wrap:wrap}
 .nav a{padding:8px 10px;border-radius:10px}
-.nav a.active{background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.35)}
+.nav a.active{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
 
 .container{
   max-width:1100px;
@@ -58,7 +56,7 @@ a:hover{opacity:1}
 
 .wizard{min-width:0}
 .panel{
-  background:rgba(17,24,39,.85);
+  background:rgba(255,255,255,.03);
   border:1px solid var(--line);
   border-radius:16px;
   padding:18px;
@@ -78,7 +76,7 @@ a:hover{opacity:1}
   gap:8px;
   padding:10px 12px;
   border-radius:14px;
-  background: rgba(17,24,39,.55);
+  background: rgba(255,255,255,.03);
   border:1px solid var(--line);
   color:var(--muted);
   font-size:13px;
@@ -87,13 +85,13 @@ a:hover{opacity:1}
   width:22px;height:22px;border-radius:999px;
   display:inline-flex;align-items:center;justify-content:center;
   border:1px solid var(--line);
-  background: rgba(15,23,42,.7);
+  background: rgba(255,255,255,.03);
   color:var(--text);
 }
 .step.active{
   color:var(--text);
-  border-color: rgba(124,58,237,.45);
-  background: rgba(124,58,237,.12);
+  border-color: rgba(255,255,255,.24);
+  background: rgba(255,255,255,.06);
 }
 
 .stepPanel h1{margin:4px 0 6px; font-size:22px}
@@ -112,7 +110,7 @@ a:hover{opacity:1}
 .pick input{position:absolute; opacity:0; pointer-events:none}
 .pickBox{
   border:1px solid var(--line);
-  background: rgba(15,23,42,.75);
+  background: rgba(255,255,255,.03);
   border-radius:16px;
   padding:14px;
   cursor:pointer;
@@ -121,8 +119,8 @@ a:hover{opacity:1}
 }
 .pickBox:hover{transform: translateY(-1px)}
 .pick input:checked + .pickBox{
-  border-color: rgba(34,197,94,.55);
-  background: rgba(34,197,94,.08);
+  border-color: rgba(255,255,255,.3);
+  background: rgba(255,255,255,.06);
 }
 .pickTitle{font-weight:700; margin-bottom:4px}
 .pickDesc{color:var(--muted); font-size:13px; margin-bottom:10px}
@@ -134,14 +132,14 @@ select, input[type="range"]{
   width:100%;
 }
 select{
-  background: rgba(15,23,42,.8);
+  background: rgba(0,0,0,.35);
   color: var(--text);
   border:1px solid var(--line);
   border-radius:12px;
   padding:10px 12px;
   outline:none;
 }
-select:focus{border-color: rgba(124,58,237,.55)}
+select:focus{border-color: rgba(255,255,255,.3)}
 
 .rangeRow{
   display:flex;
@@ -154,7 +152,7 @@ select:focus{border-color: rgba(124,58,237,.55)}
   padding:8px 10px;
   border-radius:999px;
   border:1px solid var(--line);
-  background: rgba(15,23,42,.7);
+  background: rgba(255,255,255,.03);
   color: var(--text);
   font-weight:700;
 }
@@ -179,7 +177,7 @@ select:focus{border-color: rgba(124,58,237,.55)}
   margin-top:16px;
   padding:14px;
   border-radius:14px;
-  background: rgba(15,23,42,.7);
+  background: rgba(255,255,255,.03);
   border:1px solid var(--line);
 }
 .summaryTitle{font-weight:700; margin-bottom:10px}
@@ -189,7 +187,7 @@ select:focus{border-color: rgba(124,58,237,.55)}
   padding:8px 10px;
   border-radius:999px;
   border:1px solid var(--line);
-  background: rgba(17,24,39,.55);
+  background: rgba(255,255,255,.04);
 }
 
 .actions{
@@ -201,23 +199,23 @@ select:focus{border-color: rgba(124,58,237,.55)}
 }
 .btn{
   border:1px solid var(--line);
-  background: rgba(15,23,42,.8);
+  background: rgba(255,255,255,.05);
   color: var(--text);
   padding:10px 14px;
   border-radius:12px;
   cursor:pointer;
 }
-.btn:hover{border-color: rgba(124,58,237,.45)}
+.btn:hover{border-color: rgba(255,255,255,.24); background: rgba(255,255,255,.08)}
 .btn.primary{
-  background: rgba(124,58,237,.22);
-  border-color: rgba(124,58,237,.5);
+  background: rgba(255,255,255,.1);
+  border-color: rgba(255,255,255,.18);
 }
-.btn.primary:hover{background: rgba(124,58,237,.28)}
+.btn.primary:hover{background: rgba(255,255,255,.14)}
 .btn.full{display:block;text-align:center;width:100%}
 
 .side{display:flex; flex-direction:column; gap:12px}
 .sideCard{
-  background: rgba(17,24,39,.75);
+  background: rgba(255,255,255,.03);
   border:1px solid var(--line);
   border-radius:16px;
   padding:14px;

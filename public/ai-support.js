@@ -11,22 +11,26 @@ const charCount = document.getElementById("charCount");
 const copyTranscript = document.getElementById("copyTranscript");
 const randomPrompt = document.getElementById("randomPrompt");
 const sendBtn = document.getElementById("sendBtn");
+const API_BASE = String(window.JEFFYZ_CONFIG?.apiBaseUrl || "").replace(/\/$/, "");
+const STORAGE_KEY = "jeffyz_ai_support_v3";
 
-const STORAGE_KEY = "jeffyz_ai_support_v2";
+function apiUrl(path) {
+  return `${API_BASE}${path}`;
+}
 
 const starterMessage = {
   role: "assistant",
   content: [
     "## What this looks like",
-    "Tell me the symptom in plain language and I will turn it into a clean first-pass troubleshooting plan.",
+    "Describe the symptom in plain language and I will turn it into a clear first-pass troubleshooting plan.",
     "",
     "## What to check now",
-    "1. Describe the exact issue.",
-    "2. Tell me when it started.",
-    "3. Mention what changed recently.",
+    "1. Explain the exact issue.",
+    "2. Mention when it started.",
+    "3. Say what changed recently.",
     "",
     "## Recommended next step",
-    "Use one of the quick prompts on the left or describe your case directly."
+    "Use one of the quick prompts or describe your own issue directly."
   ].join("\n")
 };
 
@@ -38,7 +42,7 @@ function loadConversation() {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
     if (Array.isArray(stored) && stored.length) return stored;
   } catch (_error) {
-    // Ignore parse errors and reset to default.
+    // Ignore parse errors.
   }
   return [starterMessage];
 }
@@ -215,12 +219,12 @@ function getRecentHistory() {
 
 async function syncHealth() {
   try {
-    const response = await fetch("/api/health");
+    const response = await fetch(apiUrl("/api/health"));
     if (!response.ok) throw new Error("Health check failed");
     const data = await response.json();
-    providerBadge.textContent = `Provider: ${data.aiProvider || "mock"}`;
+    providerBadge.textContent = data.aiProvider ? "Assistant online" : "Assistant ready";
   } catch (_error) {
-    providerBadge.textContent = "Provider: unknown";
+    providerBadge.textContent = "Connection unavailable";
   }
 }
 
@@ -230,7 +234,7 @@ async function sendMessage(message) {
   showTypingBubble();
 
   try {
-    const response = await fetch("/api/ai-support", {
+    const response = await fetch(apiUrl("/api/ai-support"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -242,11 +246,12 @@ async function sendMessage(message) {
       })
     });
 
+    const data = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      throw new Error("AI service is unavailable right now.");
+      throw new Error(data.detail || data.error || "AI support request failed.");
     }
 
-    const data = await response.json();
     hideTypingBubble();
 
     const reply = data.reply || "I could not generate a response.";
@@ -258,11 +263,13 @@ async function sendMessage(message) {
       issueTypeSelect.value = data.issueType;
     }
 
-    providerBadge.textContent = `Provider: ${data.provider || "mock"}`;
+    providerBadge.textContent = "Assistant online";
     setStatus(data.provider ? `Ready • ${data.provider}` : "Ready");
   } catch (error) {
     hideTypingBubble();
-    const fallback = error.message || "Something went wrong while contacting AI support.";
+    const fallback = /Failed to fetch/.test(error.message)
+      ? "Unable to reach the AI backend. If the frontend and backend are hosted separately, set your backend URL in site-config.js."
+      : (error.message || "Something went wrong while contacting AI support.");
     conversation.push({ role: "assistant", content: fallback });
     addMessage("assistant", fallback);
     saveConversation();
