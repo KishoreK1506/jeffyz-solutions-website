@@ -1,8 +1,12 @@
-
 const hamburger = document.getElementById("hamburger");
 const menu = document.getElementById("menu");
 const year = document.getElementById("year");
 const currentPage = document.body.dataset.page || "";
+const API_BASE = String(window.JEFFYZ_CONFIG?.apiBaseUrl || "").replace(/\/$/, "");
+
+function apiUrl(path) {
+  return `${API_BASE}${path}`;
+}
 
 hamburger?.addEventListener("click", () => {
   menu.classList.toggle("open");
@@ -42,7 +46,7 @@ function showToast(message, isError = false) {
   toast.style.borderColor = isError ? "rgba(251,113,133,.35)" : "rgba(255,255,255,.12)";
   toast.classList.add("show");
   clearTimeout(showToast._timer);
-  showToast._timer = setTimeout(() => toast.classList.remove("show"), 2600);
+  showToast._timer = setTimeout(() => toast.classList.remove("show"), 3200);
 }
 
 const contactForm = document.getElementById("contactForm");
@@ -57,7 +61,7 @@ contactForm?.addEventListener("submit", async (event) => {
   submitBtn.textContent = "Sending...";
 
   try {
-    const response = await fetch("/send-email", {
+    const response = await fetch(apiUrl("/api/contact"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -65,15 +69,20 @@ contactForm?.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
 
+    const result = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      throw new Error("Unable to send your query right now.");
+      throw new Error(result.message || "Unable to send your query right now.");
     }
 
-    const result = await response.json();
     showToast(result.message || "Message sent successfully.");
     contactForm.reset();
   } catch (error) {
-    showToast(error.message || "Something went wrong.", true);
+    const message = error.message || "Something went wrong.";
+    const helpful = message.includes("Failed to fetch")
+      ? "Unable to reach the backend. If the frontend and backend are hosted separately, set your backend URL in site-config.js."
+      : message;
+    showToast(helpful, true);
   } finally {
     submitBtn.disabled = false;
     submitBtn.textContent = "Send Query";
@@ -122,12 +131,12 @@ function initNetworkCanvas() {
     canvas.height = Math.floor(rect.height * ratio);
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-    const count = Math.max(28, Math.floor(rect.width / 55));
+    const count = Math.max(24, Math.floor(rect.width / 60));
     particles = Array.from({ length: count }, () => ({
       x: Math.random() * rect.width,
       y: Math.random() * rect.height,
-      vx: (Math.random() - 0.5) * 0.35,
-      vy: (Math.random() - 0.5) * 0.35
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25
     }));
   }
 
@@ -147,8 +156,8 @@ function initNetworkCanvas() {
     for (let i = 0; i < particles.length; i += 1) {
       const a = particles[i];
       ctx.beginPath();
-      ctx.arc(a.x, a.y, 1.5, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(94,231,255,.72)";
+      ctx.arc(a.x, a.y, 1.2, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,.4)";
       ctx.fill();
 
       for (let j = i + 1; j < particles.length; j += 1) {
@@ -162,7 +171,7 @@ function initNetworkCanvas() {
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(124,77,255,${alpha * 0.28})`;
+          ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.14})`;
           ctx.lineWidth = 1;
           ctx.stroke();
         }
